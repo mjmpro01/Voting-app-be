@@ -1,14 +1,14 @@
-import migrate from 'postgres-migrations';
+import { migrate } from 'postgres-migrations';
 
-import Constant from './config/config';
+import Constant from './config/config.js';
 
 const pgConfig = Constant.instance.DATABASE_CONFIG; 
 function main() {
   const dbConfig = {
-    user: pgConfig.user,
+    user: pgConfig.username,
     password: pgConfig.password,
     host: pgConfig.host,
-    port: pgConfig.port,
+    port: +pgConfig.port,
     database: pgConfig.database,
   };
 

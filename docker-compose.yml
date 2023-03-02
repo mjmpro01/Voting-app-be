@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: 123456a@
+      POSTGRES_USER: root
+    volumes:
+    - .\db_postgres_example.sql:/docker-entrypoint-initdb.d/db_postgres_example.sql

@@ -1,0 +1,13 @@
+{
+  "env": {
+    "node": true
+  },
+  "sourceType": "module",
+  "extends": ["eslint:recommended"],
+  "parserOptions": {
+    "ecmaVersion": 2018
+  },
+  "rules": {
+    
+  }
+}

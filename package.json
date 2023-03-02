@@ -5,10 +5,7 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "babel-version": "babel --version",
-    "test1": "babel ./models/index.js"
+    "db-migrate": "node src/db-migrate.js"
   },
   "keywords": [],
   "author": "",
@@ -21,10 +18,9 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
-    "nvm": "^0.0.4",
     "pg": "^8.9.0",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.29.0"
+    "postgres-migrations": "^5.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.21.0",

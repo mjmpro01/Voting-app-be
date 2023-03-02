@@ -9,5 +9,3 @@ services:
     environment:
       POSTGRES_PASSWORD: 123456a@
       POSTGRES_USER: root
-    volumes:
-    - .\db_postgres_example.sql:/docker-entrypoint-initdb.d/db_postgres_example.sql

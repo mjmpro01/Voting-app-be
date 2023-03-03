@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import Constant from '../config/config.js';
 
 const pgConfig = Constant.instance.DATABASE_CONFIG; 
-console.log("🚀 ~ file: db.js:8 ~ pgConfig:", pgConfig)
 
 dotenv.config();
 

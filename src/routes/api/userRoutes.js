@@ -1,9 +1,45 @@
-const express = require('express');
-const userController = require('../controllers/userController');
+import Router from "koa-router";
+import { UserController } from "../controllers";
+import { validate, jwtValidate } from "../middlewares";
 
-const router = express.Router();
+const router = new Router();
 
-router.get('/:userId', userController.getUser);
-router.post('/', userController.createUser);
+// Create new User
+router.post(
+  "/users",
+  validate({
+    body: {
+      username: {
+        type: "string",
+        required: true,
+      },
+      password: {
+        type: "password",
+        required: true,
+      },
+    },
+  }),
+  UserController.postCreateNewUser
+);
 
-module.exports = router;
+router.post(
+  "/login",
+  validate({
+    body: {
+      username: {
+        type: "string",
+        required: true,
+      },
+      password: {
+        type: "string",
+        required: true,
+      },
+    },
+  }),
+  UserController.login
+);
+
+router.get("/users", UserController.getListUsers);
+
+router.delete("/users/:id", jwtValidate, UserController.deleteUserWithId);
+export default router;

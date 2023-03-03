@@ -1,41 +1,41 @@
-ALTER TABLE ONLY public."Vote" DROP CONSTRAINT fk_candidate_vote;
-ALTER TABLE ONLY public."Poll" DROP CONSTRAINT fk_major_poll;
-ALTER TABLE ONLY public."Vote" DROP CONSTRAINT fk_poll_vote;
-ALTER TABLE ONLY public."User" DROP CONSTRAINT fk_role_member;
-ALTER TABLE ONLY public."Vote" DROP CONSTRAINT fk_vote_user;
-ALTER TABLE ONLY public."Candidate" DROP CONSTRAINT "Candidate_name_name1_key";
-ALTER TABLE ONLY public."Candidate" DROP CONSTRAINT "Candidate_pkey";
-ALTER TABLE ONLY public."User" DROP CONSTRAINT "Member_pkey";
-ALTER TABLE ONLY public."Poll" DROP CONSTRAINT "Poll_pkey";
-ALTER TABLE ONLY public."Role" DROP CONSTRAINT "Role_pkey";
-ALTER TABLE ONLY public."Major" DROP CONSTRAINT "TypeTeam_name_name1_key";
-ALTER TABLE ONLY public."Major" DROP CONSTRAINT "TypeTeam_pkey";
-ALTER TABLE ONLY public."Vote" DROP CONSTRAINT "Vote_pkey";
-ALTER TABLE ONLY public."User" DROP CONSTRAINT "uniqueName";
-ALTER TABLE ONLY public."Poll" DROP CONSTRAINT unique_name;
+ALTER TABLE ONLY public."Vote" DROP CONSTRAINT IF EXISTS fk_candidate_vote;
+ALTER TABLE ONLY public."Poll" DROP CONSTRAINT IF EXISTS fk_major_poll;
+ALTER TABLE ONLY public."Vote" DROP CONSTRAINT IF EXISTS fk_poll_vote;
+ALTER TABLE ONLY public."User" DROP CONSTRAINT IF EXISTS fk_role_member;
+ALTER TABLE ONLY public."Vote" DROP CONSTRAINT IF EXISTS fk_vote_user;
+ALTER TABLE ONLY public."Candidate" DROP CONSTRAINT IF EXISTS "Candidate_name_name1_key";
+ALTER TABLE ONLY public."Candidate" DROP CONSTRAINT IF EXISTS "Candidate_pkey";
+ALTER TABLE ONLY public."User" DROP CONSTRAINT IF EXISTS "Member_pkey";
+ALTER TABLE ONLY public."Poll" DROP CONSTRAINT IF EXISTS "Poll_pkey";
+ALTER TABLE ONLY public."Role" DROP CONSTRAINT IF EXISTS "Role_pkey";
+ALTER TABLE ONLY public."Major" DROP CONSTRAINT IF EXISTS "TypeTeam_name_name1_key";
+ALTER TABLE ONLY public."Major" DROP CONSTRAINT IF EXISTS "TypeTeam_pkey";
+ALTER TABLE ONLY public."Vote" DROP CONSTRAINT IF EXISTS "Vote_pkey";
+ALTER TABLE ONLY public."User" DROP CONSTRAINT IF EXISTS "uniqueName";
+ALTER TABLE ONLY public."Poll" DROP CONSTRAINT IF EXISTS unique_name;
 
 
-DROP INDEX fki_c;
-
-
-
-DROP INDEX fki_fk_poll_vote;
+DROP INDEX IF EXISTS fki_c;
 
 
 
-DROP INDEX fki_fk_role_member;
+DROP INDEX IF EXISTS fki_fk_poll_vote;
 
 
 
-DROP INDEX fki_r;
+DROP INDEX IF EXISTS fki_fk_role_member;
 
 
 
-DROP INDEX fki_t;
+DROP INDEX IF EXISTS fki_r;
 
 
 
-DROP INDEX fki_v;
+DROP INDEX IF EXISTS fki_t;
+
+
+
+DROP INDEX IF EXISTS fki_v;
 
 
 ALTER TABLE public."Candidate" OWNER TO root;

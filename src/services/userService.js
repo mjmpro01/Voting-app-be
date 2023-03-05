@@ -27,7 +27,7 @@ export default class UserService {
       id,
     ]);
     if (user.rows.length > 0) {
-      return user.rows;
+      return user.rows[0];
     } else {
       return null;
     }
@@ -64,6 +64,14 @@ export default class UserService {
     const user = await pool.query('SELECT * FROM public."User" WHERE email = $1', [email]);
     if (user.rows.length > 0) {
       return user.rows[0];
+    }
+  }
+
+  async findOneRoleName(id) {
+    const role = await pool.query('SELECT * FROM public."Role"');
+    console.log("🚀 ~ file: userService.js:72 ~ UserService ~ findOneRoleName ~ role:", role)
+    if (role.rows.length > 0) {
+      return role.rows[0].name;
     }
   }
 }

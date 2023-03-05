@@ -1,4 +1,5 @@
 const userService = require("../services/userService");
+const roleService = require("../services/roleService");
 const bcrypt = require("bcrypt");
 import jwt from 'jsonwebtoken';
 import Constant from '../config/config.js';
@@ -25,8 +26,8 @@ module.exports = class userController {
     try {
       const { username, password } = req.body;
 
-      const user = userService.default.prototype.findOneByUsername(username);
-      if (user.rows.length === 0) {
+      const user = await userService.default.prototype.findOneByUsername(username);
+      if (!user) {
         return res
           .status(401)
           .json({ message: "Tên đăng nhập hoặc mật khẩu không chính xác" });
@@ -34,7 +35,7 @@ module.exports = class userController {
 
       const isPasswordMatch = await bcrypt.compare(
         password,
-        user.rows[0].password
+        user.password
       );
 
       if (!isPasswordMatch) {
@@ -42,9 +43,9 @@ module.exports = class userController {
           .status(401)
           .json({ message: "Tên đăng nhập hoặc mật khẩu không chính xác" });
       }
-
+      
       const token = jwt.sign(
-        { userId: user.rows[0].id },
+        { userId: user.id },
         Constant.instance.PRIVATE_KEY
       );
 

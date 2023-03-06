@@ -28,7 +28,15 @@ export default class VoteService {
       return true;
     } else {
       return false;
-    }
-      
+    } 
+  }
+
+  async findAllByPollId(pollId) {
+    const res = await pool.query('SELECT A."userId", B.username, A."candidateId", C.name FROM PUBLIC."Vote" A, PUBLIC."User" B, PUBLIC."Candidate" C WHERE A."userId" = B.id AND A."pollId" = $1 AND A."candidateId" = C.id', [pollId]);
+    if (res.rowCount > 0) {
+      return res.rows;
+    } else {
+      return null;
+    } 
   }
 }

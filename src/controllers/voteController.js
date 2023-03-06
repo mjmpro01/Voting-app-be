@@ -9,7 +9,7 @@ module.exports = class candidateController {
       const { userId } = jwt.decode(token);
 
       if (!userId) {
-        return res.status(400).json({ message: "Please login" });
+        return res.status(400).json({message: "Please login" });
       } else {
         info.userId = userId;
       }
@@ -30,5 +30,8 @@ module.exports = class candidateController {
     } catch (e) {
       return res.status(500).json({ message: "Internal server" });
     }
+  };
+  async getVotesByPollId(req, res) {
+
   }
 };

@@ -47,7 +47,11 @@ export default class Constant {
     USER_NOT_FOUND_OR_BAD_PASSWORD:'bad_username_or_password',
     USER_IS_INACTIVE: 'user_is_inactive',
     USER_NOT_FOUND: 'user_not_found',
-    USERNAME_IS_DUPLICATED: 'username_is_duplicated'
+    USERNAME_IS_DUPLICATED: 'username_is_duplicated',
   };
+
+  ERROR_MESSAGE = {
+    INCORRECT_USERNAME_PASSWORD: 'Incorrect username and password'
+  }
   constructor() {}
 }

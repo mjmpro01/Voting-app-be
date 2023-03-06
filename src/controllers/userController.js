@@ -3,6 +3,7 @@ const roleService = require("../services/roleService");
 const bcrypt = require("bcrypt");
 import jwt from 'jsonwebtoken';
 import Constant from '../config/config.js';
+import { createResponseObject } from '../../utils/response.js';
 module.exports = class userController {
   async register(req, res) {
     const info = req.body;
@@ -28,9 +29,10 @@ module.exports = class userController {
 
       const user = await userService.default.prototype.findOneByUsername(username);
       if (!user) {
+        const message = createResponseObject(Constant.instance.ERROR_MESSAGE.INCORRECT_USERNAME_PASSWORD, null, null);
         return res
           .status(401)
-          .json({ message: "Tên đăng nhập hoặc mật khẩu không chính xác" });
+          .json(message);
       }
 
       const isPasswordMatch = await bcrypt.compare(
@@ -41,7 +43,7 @@ module.exports = class userController {
       if (!isPasswordMatch) {
         return res
           .status(401)
-          .json({ message: "Tên đăng nhập hoặc mật khẩu không chính xác" });
+          .json("hello");
       }
       
       const token = jwt.sign(

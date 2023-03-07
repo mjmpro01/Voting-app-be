@@ -1,8 +1,17 @@
 const { pool } = require("../services/db");
 export default class PollService {
   static instance = new PollService();
+  async findByName(name) {
+    const users = await pool.query(
+      'SELECT * FROM public."Poll" WHERE name = $1',
+      [name]
+    );
+    if (users.rowCount > 0) {
+      return users;
+    }
+  }
   async findAll() {
-    const users = await pool.query('SELECT * FROM public."User"');
+    const users = await pool.query('SELECT * FROM public."Poll"');
     return users;
   }
 

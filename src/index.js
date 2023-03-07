@@ -21,6 +21,7 @@ app.get("/admin", requirePermission("user"), function(req, res) {
 });
 
 app.post("/polls", requirePermission("admin"), pollController.prototype.createPoll);
+app.get("/polls/:id", requirePermission("admin"), voteController.prototype.getVotesByPollId);
 app.post("/candidates", requirePermission("admin"), candidateController.prototype.createCandidate);
 app.post("/vote", requirePermission("user"), voteController.prototype.createVote)
 

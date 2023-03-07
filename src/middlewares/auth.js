@@ -19,7 +19,7 @@ const requirePermission = (permission) => {
 
       if (
         (permissions && permissions.includes(permission)) ||
-        permissions.includes("admin")
+        permissions.includes("Admin")
       ) {
         next();
       } else {

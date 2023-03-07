@@ -50,8 +50,7 @@ module.exports = class userController {
         { userId: user.id },
         Constant.instance.PRIVATE_KEY
       );
-
-      res.json({ message: "Đăng nhập thành công", token });
+      res.json(createResponseObject('Login successfully', { token }, null));
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Lỗi" });

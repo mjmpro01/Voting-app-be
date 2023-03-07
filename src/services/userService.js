@@ -69,7 +69,6 @@ export default class UserService {
 
   async findOneRoleName(id) {
     const role = await pool.query('SELECT * FROM public."Role"');
-    console.log("🚀 ~ file: userService.js:72 ~ UserService ~ findOneRoleName ~ role:", role)
     if (role.rows.length > 0) {
       return role.rows[0].name;
     }

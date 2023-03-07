@@ -26,5 +26,18 @@ module.exports = class pollController {
     } catch (e) {
       return res.status(500).json({ message: "Internal server" });
     }
+  };
+  
+  async getAllPolls(req, res) {
+    try {
+      const polls = await pollService.default.instance.findAll();
+      console.log("🚀 ~ file: pollController.js:34 ~ pollController ~ getAllPolls ~ polls:", polls)
+
+      if (polls) {
+        return res.status(200).json(createResponseObject("Get Polls successfully", polls, null));
+      }
+    } catch (e) {
+      return res.status(500).json({ message: "Internal server" });
+    }
   }
 };

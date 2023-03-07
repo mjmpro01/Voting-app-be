@@ -16,15 +16,16 @@ app.post('/register', userController.prototype.register);
 
 app.post('/login', userController.prototype.login);
   
-app.get("/admin", requirePermission("user"), function(req, res) {
+app.get("/admin", requirePermission("User"), function(req, res) {
   res.send("Welcome, user!");
 });
 
-app.post("/polls", requirePermission("admin"), pollController.prototype.createPoll);
-app.get("/polls/:id", requirePermission("admin"), voteController.prototype.getVotesByPollId);
-app.post("/candidates", requirePermission("admin"), candidateController.prototype.createCandidate);
-app.post("/vote", requirePermission("user"), voteController.prototype.createVote)
+app.post("/polls", requirePermission("Admin"), pollController.prototype.createPoll);
+app.get("/polls", requirePermission("User"), pollController.prototype.getAllPolls);
+app.get("/polls/:id", requirePermission("Admin"), voteController.prototype.getVotesByPollId);
+app.post("/candidates", requirePermission("Admin"), candidateController.prototype.createCandidate);
+app.post("/vote", requirePermission("User"), voteController.prototype.createVote)
 
 app.listen(3000, () => {
-console.log('Server is listening on port 3000');
+  console.log('Server is listening on port 3000');
 });

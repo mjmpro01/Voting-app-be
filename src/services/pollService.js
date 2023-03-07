@@ -11,8 +11,10 @@ export default class PollService {
     }
   }
   async findAll() {
-    const users = await pool.query('SELECT * FROM public."Poll"');
-    return users;
+    const polls = await pool.query('SELECT * FROM public."Poll"');
+    if (polls.rowCount > 0) {
+      return polls.rows;
+    }
   }
 
   async create(info) {

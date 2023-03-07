@@ -67,6 +67,13 @@ export default class UserService {
     }
   }
 
+  async findOneByEmail(email) {
+    const user = await pool.query('SELECT * FROM public."User" WHERE email = $1', [email]);
+    if (user.rows.length > 0) {
+      return user.rows[0];
+    }
+  }
+
   async findOneRoleName(id) {
     const role = await pool.query('SELECT * FROM public."Role"');
     if (role.rows.length > 0) {

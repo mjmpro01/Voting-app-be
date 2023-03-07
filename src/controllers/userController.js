@@ -25,9 +25,9 @@ module.exports = class userController {
 
   async login(req, res) {
     try {
-      const { username, password } = req.body;
+      const { email, password } = req.body;
 
-      const user = await userService.default.prototype.findOneByUsername(username);
+      const user = await userService.default.prototype.findOneByEmail(email);
       if (!user) {
         const message = createResponseObject(Constant.instance.ERROR_MESSAGE.INCORRECT_USERNAME_PASSWORD, null, null);
         return res
@@ -43,7 +43,7 @@ module.exports = class userController {
       if (!isPasswordMatch) {
         return res
           .status(401)
-          .json("hello");
+          .json(createResponseObject('Email or password is invalid', null, "Bad request"));
       }
       
       const token = jwt.sign(
@@ -53,7 +53,7 @@ module.exports = class userController {
       res.json(createResponseObject('Login successfully', { token }, null));
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Lỗi" });
+      res.status(500).json({ message: "Internal Server" });
     }
   }
 };

@@ -1,13 +1,23 @@
 const { pool } = require("../services/db");
 export default class PollService {
   static instance = new PollService();
+  async findOne(id) {
+    const poll = await pool.query(
+      'SELECT * FROM public."Poll" WHERE id = $1',
+      [id]
+    );
+    if (poll.rowCount > 0) {
+      return poll.rows[0];
+    }
+  }
+  
   async findByName(name) {
-    const users = await pool.query(
+    const polls = await pool.query(
       'SELECT * FROM public."Poll" WHERE name = $1',
       [name]
     );
-    if (users.rowCount > 0) {
-      return users;
+    if (polls.rowCount > 0) {
+      return polls;
     }
   }
   async findAll() {
@@ -19,8 +29,8 @@ export default class PollService {
 
   async create(info) {
     const res = await pool.query(
-      'INSERT INTO public."Poll" (name, "teamSize", description, "createdAt", "majorId") VALUES ($1, $2, $3, $4, $5)',
-      [info.name, info.teamSize, info.description, new Date(), info.majorId]
+      'INSERT INTO public."Poll" (name, "teamSize", description, "createdAt") VALUES ($1, $2, $3, $4)',
+      [info.name, info.teamSize, info.description, new Date()]
     );
     if (res) {
       return true;

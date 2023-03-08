@@ -5,10 +5,16 @@ export default class UserService {
   
   static instance = new UserService();
   async findAll() {
-    const users = await pool.query('SELECT * FROM public."User"');
-    return users;
+    const users = await pool.query('SELECT * FROM public."User" WHERE roleId = 2');
+    return users.rows;
   };
 
+  async findAllUser() {
+    const users = await pool.query('SELECT A.id, A.username, M.name FROM public."User" A, public."Major" M WHERE A."roleId" = 2 and M.id = A."majorId"');
+    if (users.rowCount > 0) {
+      return users.rows;
+    } else return null;
+  }
   async create(info) {
     const hashedPassword = await this.hashPassword(info.password);
     const res = await pool.query(
@@ -33,6 +39,16 @@ export default class UserService {
     }
   };
 
+  async findOneRoleUser(id) {
+    const user = await pool.query('SELECT * FROM public."User" WHERE id = $1 and "roleId" = 2', [
+      id,
+    ]);
+    if (user.rows.length > 0) {
+      return user.rows[0];
+    } else {
+      return null;
+    }
+  };
   async hashPassword(password) {
     const saltRounds = Constant.instance.DEFAULT_SALT_ROUND;
 

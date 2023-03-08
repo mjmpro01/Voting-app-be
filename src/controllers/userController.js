@@ -50,8 +50,18 @@ module.exports = class userController {
         { userId: user.id },
         Constant.instance.PRIVATE_KEY
       );
-      res.json(createResponseObject('Login successfully', { token }, null));
+      res.status(200).json(createResponseObject('Login successfully', { token }, null));
     } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server" });
+    }
+  }
+
+  async getAllUsers(req, res) {
+    try {
+      const users = await userService.default.prototype.findAllUser();
+      res.status(201).json(createResponseObject('get all users successfully', users, null));
+    } catch(e) {
       console.error(error);
       res.status(500).json({ message: "Internal Server" });
     }

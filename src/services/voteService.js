@@ -7,10 +7,10 @@ export default class VoteService {
     return votes;
   }
 
-  async create(info) {
+  async create(userId, pollId, candidateId) {
     const res = await pool.query(
       'INSERT INTO public."Vote" ("userId", "pollId", "candidateId") VALUES ($1, $2, $3)',
-      [info.userId, info.pollId, info.candidateId]
+      [userId, pollId, candidateId]
     );
     if (res) {
       return true;
@@ -19,10 +19,10 @@ export default class VoteService {
     }
   };
 
-  async checkExistedVote(info) {
+  async checkExistedVote(userId, pollId, candidateId) {
     const res = await pool.query(
       'SELECT * FROM public."Vote" WHERE "userId" = $1 and "pollId" = $2 and "candidateId" = $3',
-      [info.userId, info.pollId, info.candidateId]
+      [userId, pollId, candidateId]
     );
     if (res.rowCount > 0) {
       return true;
@@ -32,7 +32,7 @@ export default class VoteService {
   }
 
   async findAllByPollId(pollId) {
-    const res = await pool.query('SELECT A."userId", B.username, A."candidateId", C.name FROM PUBLIC."Vote" A, PUBLIC."User" B, PUBLIC."Candidate" C WHERE A."userId" = B.id AND A."pollId" = $1 AND A."candidateId" = C.id', [pollId]);
+    const res = await pool.query('SELECT A."userId", B.username, A."candidateId", D.username FROM PUBLIC."Vote" A, PUBLIC."User" B, PUBLIC."Candidate" C,  PUBLIC."User" D WHERE A."userId" = B.id AND A."pollId" = $1 AND A."candidateId" = C.id AND C."userId" = D.id', [pollId]);
     if (res.rowCount > 0) {
       return res.rows;
     } else {

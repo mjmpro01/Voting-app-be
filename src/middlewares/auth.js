@@ -1,26 +1,17 @@
 const jwt = require("jsonwebtoken");
 const userService = require("../services/userService");
 const roleService = require("../services/roleService");
-
+const constant = require('../config/config');
 const requirePermission = (permission) => {
   return async function (req, res, next) {
     try {
-      const token = verifyToken(req, res, next);
-      const { userId } = jwt.decode(token);
-
-      if (!userId) {
+      const { userId } = req.ctx;
+      if (!userId) { 
         res.status(403).json({ message: "Token expired" });
       }
-      const user = await userService.default.prototype.findOne(userId);
+      const user = await userService.findOne(userId);
 
-      const permissions = await roleService.default.instance.findByUserId(
-        user.roleId
-      );
-
-      if (
-        (permissions && permissions.includes(permission)) ||
-        permissions.includes("Admin")
-      ) {
+      if (permission === "Admin" && user.role === 1 || permission === "User" && user.role > 0) {
         next();
       } else {
         res
@@ -36,19 +27,22 @@ const requirePermission = (permission) => {
   };
 };
 
-const verifyToken = (req, res) => {
-  // Get auth header value
-  const bearerHeader = req.headers["authorization"];
-  // Check if bearer is undefined
-  if (typeof bearerHeader !== "undefined") {
-    // Split at the space
-    const bearer = bearerHeader.split(" ");
-    // Get token from array
-    const bearerToken = bearer[1];
-    return bearerToken;
-  } else {
-    // Forbidden
-    res.sendStatus(403);
+const verifyToken = () => {
+  return async function (req, res, next) {
+    // Get auth header value
+    const bearerHeader = req.headers["authorization"];
+    // Check if bearer is undefined
+    if (typeof bearerHeader !== "undefined") {
+      // Split at the space
+      const bearer = bearerHeader.split(" ");
+      // Get token from array
+      const bearerToken = bearer[1];
+
+      const token = jwt.verify(bearerToken, constant.PRIVATE_KEY);
+      req.ctx = token;
+      next();
+    } 
+    return null;
   }
 };
 

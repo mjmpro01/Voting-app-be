@@ -1,9 +1,9 @@
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 
-import Constant from '../config/config.js';
+import constant from '../config/config.js';
 
-const pgConfig = Constant.instance.DATABASE_CONFIG; 
+const pgConfig = constant.DATABASE_CONFIG; 
 
 dotenv.config();
 

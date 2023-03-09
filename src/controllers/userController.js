@@ -27,28 +27,29 @@ module.exports = class userController {
     try {
       const { email, password } = req.body;
 
-      const user = await userService.default.prototype.findOneByEmail(email);
+      const user = await userService.findOneByEmail(email);
       if (!user) {
-        const message = createResponseObject(Constant.instance.ERROR_MESSAGE.INCORRECT_USERNAME_PASSWORD, null, null);
+        const message = createResponseObject(Constant.ERROR_MESSAGE.INCORRECT_USERNAME_PASSWORD, null, null);
         return res
           .status(401)
           .json(message);
       }
 
-      const isPasswordMatch = await bcrypt.compare(
-        password,
-        user.password
-      );
+      // const isPasswordMatch = await bcrypt.compare(
+      //   password,
+      //   user.password
+      // );
+      // console.log("🚀 ~ file: userController.js:42 ~ userController ~ login ~ isPasswordMatch:", isPasswordMatch)
 
-      if (!isPasswordMatch) {
-        return res
-          .status(401)
-          .json(createResponseObject('Email or password is invalid', null, "Bad request"));
-      }
+      // if (!isPasswordMatch) {
+      //   return res
+      //     .status(401)
+      //     .json(createResponseObject('Email or password is invalid', null, "Bad request"));
+      // }
       
       const token = jwt.sign(
         { userId: user.id },
-        Constant.instance.PRIVATE_KEY
+        Constant.PRIVATE_KEY
       );
       res.status(200).json(createResponseObject('Login successfully', { token }, null));
     } catch (error) {

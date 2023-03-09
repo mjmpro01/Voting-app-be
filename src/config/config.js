@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Constant class to store constant value + value set using ENV
-export default class Constant {
+class Constant {
   static instance = new Constant();
   // Default Http Code
   HTTP_CODE = {
@@ -55,3 +55,4 @@ export default class Constant {
   }
   constructor() {}
 }
+module.exports = new Constant();

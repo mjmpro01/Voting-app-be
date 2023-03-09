@@ -1,27 +1,24 @@
 const { pool } = require("../services/db");
 import Constant from '../config/config.js';
 const bcrypt = require('bcrypt');
-export default class UserService {
+class UserService {
   
-  static instance = new UserService();
   async findAll() {
-    const users = await pool.query('SELECT * FROM public."User" WHERE roleId = 2');
-    return users.rows;
-  };
-
-  async findAllUser() {
-    const users = await pool.query('SELECT A.id, A.username, M.name FROM public."User" A, public."Major" M WHERE A."roleId" = 2 and M.id = A."majorId"');
+    const users = await pool.query('SELECT * FROM public."user" WHERE role = 2');
     if (users.rowCount > 0) {
       return users.rows;
     } else return null;
-  }
+  };
+
   async create(info) {
     const hashedPassword = await this.hashPassword(info.password);
     const res = await pool.query(
-      'INSERT INTO public."User" (username, password, email, status, "roleId", "majorId") VALUES ($1, $2, $3, $4, $5, $6)',
-      [info.username, hashedPassword, info.email, "true", 2, info.majorId]
+      `INSERT INTO public."user"(
+        username, email, password, "createdAt", "updatedAt")
+        VALUES ($1, $2, $3 , $4, $5)`,
+      [info.name, info.email, hashedPassword, new Date().toISOString(), new Date().toISOString()]
     );
-    if (res) {
+    if (res.rowCount > 0) {
       return true;
     } else {
       return false;
@@ -29,7 +26,7 @@ export default class UserService {
   };
 
   async findOne(id) {
-    const user = await pool.query('SELECT * FROM public."User" WHERE id = $1', [
+    const user = await pool.query('SELECT * FROM public."user" WHERE id = $1', [
       id,
     ]);
     if (user.rows.length > 0) {
@@ -39,16 +36,27 @@ export default class UserService {
     }
   };
 
-  async findOneRoleUser(id) {
-    const user = await pool.query('SELECT * FROM public."User" WHERE id = $1 and "roleId" = 2', [
-      id,
-    ]);
+  async update(info) {
+    const res = await pool.query(`UPDATE public."user"
+    SET username=$2, email=$3, password=$4, role=$5, status=$6, "createdAt"=$7, "updatedAt"=$8
+    WHERE id = $1`, [info.id, info.name, info.email, info.password, info.role, info.status, info.createdAt, info.updatedAt])
+    if (res.rowCount > 0) {
+      return true;
+    } else {
+      return false;
+    }
+
+  }
+
+
+  async delete(id) { 
+    const user = await pool.query(`DELETE FROM public."user" WHERE id = $1 `, [ id ]);
     if (user.rows.length > 0) {
       return user.rows[0];
     } else {
       return null;
     }
-  };
+  }
   async hashPassword(password) {
     const saltRounds = Constant.instance.DEFAULT_SALT_ROUND;
 
@@ -69,22 +77,22 @@ export default class UserService {
     return bcrypt.compareSync(password, hashPassword);
   };
 
-  async findOneByUsername(username) {
-    const user = await pool.query('SELECT * FROM public."User" WHERE username = $1', [username]);
+  async findOneByUsername(name) {
+    const user = await pool.query('SELECT * FROM public."user" WHERE name = $1', [name]);
     if (user.rows.length > 0) {
       return user.rows[0];
     }
   }
 
   async findOneByEmail(email) {
-    const user = await pool.query('SELECT * FROM public."User" WHERE email = $1', [email]);
+    const user = await pool.query('SELECT * FROM public."user" WHERE email = $1', [email]);
     if (user.rows.length > 0) {
       return user.rows[0];
     }
   }
 
   async findOneByEmail(email) {
-    const user = await pool.query('SELECT * FROM public."User" WHERE email = $1', [email]);
+    const user = await pool.query('SELECT * FROM public."user" WHERE email = $1', [email]);
     if (user.rows.length > 0) {
       return user.rows[0];
     }
@@ -97,3 +105,4 @@ export default class UserService {
     }
   }
 }
+module.exports = new UserService();

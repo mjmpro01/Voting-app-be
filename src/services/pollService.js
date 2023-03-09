@@ -92,7 +92,7 @@ class PollService {
     const res = await pool.query(`SELECT "vote".id, "user".username, "voteUsers".username from "user" LEFT JOIN vote ON "user"."id" = "vote"."userId" 
     LEFT JOIN "user" AS "voteUsers" 
     ON "vote"."vote" @> to_jsonb(array_to_json(Array["voteUsers"."id"]))
-    WHERE "vote"."pollId" = $1 and "user".id = $2` ,[id, userId]);
+    WHERE "vote"."pollId" = $1 and "vote"."userId" = $2` ,[id, userId]);
 
     if (res.rowCount > 0) {
       return res.rows;

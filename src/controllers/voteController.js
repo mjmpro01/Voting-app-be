@@ -54,9 +54,7 @@ import { createResponseObject } from '../../utils/response.js';
 
       const { count } = await pollService.countUserJoinedPoll(id);
       
-      const voteUsers = JSON.parse(info.vote);
-
-      for (const userId of voteUsers) {
+      for (const userId of info.vote) {
         const candidate = await voteService.findOneByPollId_UserId(id, userId);
         if (!candidate) {
           return res
@@ -65,13 +63,13 @@ import { createResponseObject } from '../../utils/response.js';
         }
       }
     
-      if (voteUsers.length !== Math.floor(0.8 * count)) {
+      if (info.vote.length !== Math.floor(0.8 * count)) {
         return res
         .status(400)
         .json(createResponseObject(`Number of candidate is wrong, must be ${Math.floor(0.8 * count)} vote`, null, "Bad request" ));
       }
 
-      await voteService.updateVote(vote.id, info.vote);
+      await voteService.updateVote(vote.id, JSON.stringify(info.vote));
       const updatedVotes = await voteService.findVoteDetail(id, vote.id);
       data.id = vote.id;
       let votes = [];

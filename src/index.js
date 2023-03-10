@@ -11,11 +11,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.post('/register', userController.prototype.register);
+app.post('/register', userController.register);
 
-app.post('/login', userController.prototype.login);
+app.post('/login', userController.login);
 
-app.get('/users',requirePermission("Admin") , userController.prototype.getAllUsers);
+app.get('/users',requirePermission("Admin") , userController.getAllUsers);
 app.post("/polls",verifyToken(), requirePermission("Admin"), pollController.createPoll);
 app.get("/polls", verifyToken(), requirePermission("User"), pollController.getPollByUserId);
 app.get("/polls/:id", verifyToken(), requirePermission("User"), pollController.getPollDetail);

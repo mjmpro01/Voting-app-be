@@ -1,22 +1,25 @@
 const userService = require("../services/userService");
-const roleService = require("../services/roleService");
 const bcrypt = require("bcrypt");
 import jwt from 'jsonwebtoken';
 import Constant from '../config/config.js';
 import { createResponseObject } from '../../utils/response.js';
-module.exports = class userController {
+class userController {
   async register(req, res) {
     const info = req.body;
     if (!info.username || !info.password) {
       return res.status(400).json({ message: 'Username and password are required' });
     };
     try {
-      const checkExistedEmail = await userService.default.prototype.findOneByEmail(info.email);
+      const checkExistedEmail = await userService.findOneByEmail(info.email);
       if (checkExistedEmail) {
         return res.status(400).json({ message: 'Email has already used' });
       }
-      await userService.default.prototype.create(info);
-      res.status(201).json({ message: 'User created' });
+      const user = await userService.create(info);
+      if (user) {
+        res.status(201).json(createResponseObject("User is created successful", user, null));
+      } else {
+        res.status(500).json({ message: 'Server error' });
+      }
     } catch(e) {
       console.error(e);
       res.status(500).json({ message: 'Server error' });
@@ -35,17 +38,17 @@ module.exports = class userController {
           .json(message);
       }
 
-      // const isPasswordMatch = await bcrypt.compare(
-      //   password,
-      //   user.password
-      // );
-      // console.log("🚀 ~ file: userController.js:42 ~ userController ~ login ~ isPasswordMatch:", isPasswordMatch)
+      const isPasswordMatch = await bcrypt.compare(
+        password,
+        user.password
+      );
+      console.log("🚀 ~ file: userController.js:42 ~ userController ~ login ~ isPasswordMatch:", isPasswordMatch)
 
-      // if (!isPasswordMatch) {
-      //   return res
-      //     .status(401)
-      //     .json(createResponseObject('Email or password is invalid', null, "Bad request"));
-      // }
+      if (!isPasswordMatch) {
+        return res
+          .status(401)
+          .json(createResponseObject('Email or password is invalid', null, "Bad request"));
+      }
       
       const token = jwt.sign(
         { userId: user.id },
@@ -68,3 +71,4 @@ module.exports = class userController {
     }
   }
 };
+module.exports = new userController();

@@ -14,14 +14,14 @@ class UserService {
     const hashedPassword = await this.hashPassword(info.password);
     const res = await pool.query(
       `INSERT INTO public."user"(
-        username, email, password, "createdAt", "updatedAt")
-        VALUES ($1, $2, $3 , $4, $5)`,
-      [info.name, info.email, hashedPassword, new Date().toISOString(), new Date().toISOString()]
+        username, email, password, role, status, "createdAt", "updatedAt")
+        VALUES ($1, $2, $3 , $4, $5, $6, $7) RETURNING id, username, email`,
+      [info.username, info.email, hashedPassword, 2, 1, new Date().toISOString(), new Date().toISOString()]
     );
     if (res.rowCount > 0) {
-      return true;
+      return res.rows[0];
     } else {
-      return false;
+      return null;
     }
   };
 
@@ -58,7 +58,7 @@ class UserService {
     }
   }
   async hashPassword(password) {
-    const saltRounds = Constant.instance.DEFAULT_SALT_ROUND;
+    const saltRounds = Constant.DEFAULT_SALT_ROUND;
 
     return bcrypt.hashSync(password, saltRounds);
   };
@@ -93,9 +93,10 @@ class UserService {
 
   async findOneByEmail(email) {
     const user = await pool.query('SELECT * FROM public."user" WHERE email = $1', [email]);
+    console.log('22222')
     if (user.rows.length > 0) {
       return user.rows[0];
-    }
+    } else return null;
   }
 
   async findOneRoleName(id) {

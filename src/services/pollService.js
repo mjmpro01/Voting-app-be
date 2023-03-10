@@ -102,7 +102,7 @@ class PollService {
   }
 
   async findCandidateByPollId(id) {
-    const res = await pool.query(`SELECT "user".id, "user".username 
+    const res = await pool.query(`SELECT "user".id, "user".username, "user".email
     FROM "user" INNER JOIN vote ON "user"."id" = "vote"."userId"
     WHERE "vote"."pollId" = $1`,[id]);
     

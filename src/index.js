@@ -20,6 +20,8 @@ app.post("/polls",verifyToken(), requirePermission("Admin"), pollController.crea
 app.get("/polls", verifyToken(), requirePermission("User"), pollController.getPollByUserId);
 app.get("/polls/:id", verifyToken(), requirePermission("User"), pollController.getPollDetail);
 app.post("/poll/:id/votes", verifyToken(), requirePermission("User"), voteController.createVote);
+app.get("/poll/:id/candidate", verifyToken(), requirePermission("User"), pollController.getCandidateByPollId);
+
 // app.get("/logs/polls/:id", requirePermission("Admin"), voteController.prototype.getVotesByPollId);
 // app.post("/candidates", requirePermission("Admin"), candidateController.prototype.createCandidate);
 // app.get("/candidates/:id", requirePermission("user"), candidateController.prototype.getAllCandidateOfPoll);

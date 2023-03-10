@@ -127,7 +127,22 @@ class pollController {
   };
   async getCandidateByPollId(req, res) {
     try {
+      const { id } = req.params;
+      const { userId } = req.ctx;
+      
+      const poll = await pollService.findOne(id);
+      if (!poll) {
+        return res.status(400).json(createResponseObject("Poll is not existed", null , "Bad request"));
+      }
 
+      const candidates = await pollService.findCandidateByPollId(id);
+      const joiner = candidates.some(candidate => candidate.id === userId);
+      if (!joiner) {
+        return res.status(403).json(createResponseObject("User does not have permission to join this poll", null, "permission"));
+      }
+      if (candidates) {
+        return res.status(200).json(createResponseObject("Get Candidate of this poll successfully", candidates, null));
+      }
     } catch (e) {
       return res.status(500).json({ message: "Internal server" });
     }

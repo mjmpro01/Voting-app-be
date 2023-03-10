@@ -31,7 +31,8 @@ class pollController {
           return res.status(400).json(createResponseObject(`User: ${userId} is not existed `, null, "Bad request"));
         }
       }
-      await pollService.create(info);
+      const { id } = await pollService.create(info);
+      const pollDetail = await pollService.findOne(id);  
 
       const poll = await pollService.findByName(info.name);
       if (!poll) {
@@ -42,7 +43,7 @@ class pollController {
         await VoteService.create(id, userId, poll.id, null);
       })
       
-      return res.status(200).json(createResponseObject("Create Poll successfully", null, null));
+      return res.status(200).json(createResponseObject("Create Poll successfully", pollDetail, null));
       
     } catch (e) {
       return res.status(500).json({ message: "Internal server" });
@@ -80,12 +81,15 @@ class pollController {
     try {
       const { id } = req.params;
       const { userId } = req.ctx;
+      let data = {};
       const poll = await pollService.findOne(id);
 
       if (!poll) {
         return res.status(400).json(createResponseObject("Poll is not exist", null, "Bad request"));
       }
 
+      data.poll = poll;
+      
       const candidates = await pollService.findCandidateByPollId(id);
       const joiner = candidates.some(candidate => candidate.id === userId);
       if (!joiner) {
@@ -93,23 +97,41 @@ class pollController {
       }
 
       let pollDetails;
-      if (userId === poll.creatorId ) {
-        pollDetails = await pollService.findPollDetailForPollAdmin(id);
+      let votes = [];
+      if (userId === poll.creatorId) {
+        pollDetails = await pollService.findPollDetailForKeyPoll(id);
       } else {
         pollDetails = await pollService.findPollDetailForUser(id, userId);
       }
-    
-      if (!joiner) {
-        return res.status(403).json(createResponseObject("User does not have permission to join this poll", null, "permission"));
+      for (const pollDetail of pollDetails) {
+        const voter = {
+          id: pollDetail.id,
+          name: pollDetail.username,
+          email: pollDetail.email
+        };
+        let candidate = {
+          id: pollDetail.candidateid,
+          name: pollDetail.candidatename,
+          email: pollDetail.candidateemail
+        }; 
+        votes.push({voter,candidate});
       }
-      if (polls) {
-        return res.status(200).json(createResponseObject("Get Polls detail successfully", polls, null));
+      data.votes = votes;
+      if (data) {
+        return res.status(200).json(createResponseObject("Get Polls detail successfully", data, null));
       }
     } catch (e) {
+      console.log(e);
       return res.status(500).json({ message: "Internal server" });
     }
   };
+  async getCandidateByPollId(req, res) {
+    try {
 
+    } catch (e) {
+      return res.status(500).json({ message: "Internal server" });
+    }
+  }
 };
 
 module.exports = new pollController();

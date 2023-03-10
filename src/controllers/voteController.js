@@ -5,7 +5,6 @@ import { createResponseObject } from '../../utils/response.js';
   async getVotesByPollId(req, res) {
     try {
       const { id } = req.params;
-      console.log("🚀 ~ file: voteController.js:73 ~ candidateController ~ getVotesByPollId ~ id:", id)
       if (!id) {
         return res.status(400).json({message: "Bad request" });
       }
@@ -22,15 +21,24 @@ import { createResponseObject } from '../../utils/response.js';
   async createVote(req, res) {
     try {
       const info = req.body;
+      const { id } = req.params; 
       const { userId } = req.ctx;
+      let data = {};
 
-      if (!info.pollId) {
+      if (!id) {
         return res
           .status(400)
           .json(createResponseObject("Please enter full information", null, "Bad request" ));
       }
+
+      const poll = await pollService.findOne(id);
+      if (!poll) {
+        return res
+          .status(400)
+          .json(createResponseObject("Poll is not existed", null, "Bad request" ));
+      } 
       // check users have permission to vote
-      const vote = await voteService.findOneByPollId_UserId(info.pollId, userId);
+      const vote = await voteService.findOneByPollId_UserId(id, userId);
 
       if (!vote) {
         return res
@@ -38,19 +46,18 @@ import { createResponseObject } from '../../utils/response.js';
           .json(createResponseObject("User does not permission to vote", null, "Bad request" ));
       }
 
-      const poll = await pollService.findOne(info.pollId);
-      if (!poll) {
+      if (vote.vote) {
         return res
           .status(400)
-          .json(createResponseObject("Poll is not existed", null, "Bad request" ));
-      } 
+          .json(createResponseObject("You already voted for this poll", null, "Bad request" ));
+      }
 
-      const { count } = await pollService.countUserJoinedPoll(info.pollId);
+      const { count } = await pollService.countUserJoinedPoll(id);
       
       const voteUsers = JSON.parse(info.vote);
 
       for (const userId of voteUsers) {
-        const candidate = await voteService.findOneByPollId_UserId(info.pollId, userId);
+        const candidate = await voteService.findOneByPollId_UserId(id, userId);
         if (!candidate) {
           return res
           .status(400)
@@ -61,11 +68,28 @@ import { createResponseObject } from '../../utils/response.js';
       if (voteUsers.length !== Math.floor(0.8 * count)) {
         return res
         .status(400)
-        .json(createResponseObject("You need to vote enough number of candidates", null, "Bad request" ));
+        .json(createResponseObject(`Number of candidate is wrong, must be ${Math.floor(0.8 * count)} vote`, null, "Bad request" ));
       }
 
       await voteService.updateVote(vote.id, info.vote);
-      return res.status(200).json(createResponseObject(" Vote is updated successfully ", null, null));
+      const updatedVotes = await voteService.findVoteDetail(id, vote.id);
+      data.id = vote.id;
+      let votes = [];
+      for (const updatedVote of updatedVotes) {
+        const voter = {
+          id: updatedVote.id,
+          name: updatedVote.username,
+          email: updatedVote.email
+        };
+        let candidate = {
+          id: updatedVote.candidateid,
+          name: updatedVote.candidatename,
+          email: updatedVote.candidateemail
+        }; 
+        votes.push({voter,candidate});
+      }
+      data.votes = votes;
+      return res.status(200).json(createResponseObject("You voted successfully", data, null));
     } catch (e) {
       console.log(e);
       return res.status(500).json({ message: "Internal server" });

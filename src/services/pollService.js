@@ -2,12 +2,12 @@ const { pool } = require("../services/db");
 class PollService {
   async findOne(id) {
     const poll = await pool.query(
-      'SELECT * FROM public."poll" WHERE id = $1',
+      'SELECT * FROM public."poll" WHERE id = $1 ',
       [id]
     );
     if (poll.rowCount > 0) {
       return poll.rows[0];
-    }
+    } 
   }
   
   async findByName(name) {
@@ -28,7 +28,7 @@ class PollService {
 
   async create(info) {
     const res = await pool.query(
-      'INSERT INTO public.poll(name, description, "creatorId", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5)',
+      'INSERT INTO public.poll(name, description, "creatorId", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5) RETURNING id',
       [info.name, info.description, info.creatorId, new Date().toISOString(), new Date().toISOString()]
     );
     if (res.rowCount > 0) {
@@ -64,19 +64,19 @@ class PollService {
   }
 
   async findPollByUserId(id) {
-    const res = await pool.query(`SELECT * FROM PUBLIC."poll" 
-    LEFT JOIN PUBLIC."vote" on PUBLIC."poll".id = PUBLIC."vote"."pollId"
+    const res = await pool.query(`SELECT DISTINCT "poll".id, "poll".name FROM PUBLIC."poll" 
+    JOIN PUBLIC."vote" on PUBLIC."poll".id = PUBLIC."vote"."pollId"
     WHERE "creatorId" = $1 OR PUBLIC."vote"."userId" = $1`, [id]);
 
     if (res.rowCount > 0) {
       return res.rows;
     } else {
-      return null;
+      return [];
     }
   }
 
   async findPollDetailForKeyPoll(id) {
-    const res = await pool.query(`SELECT * from "user" LEFT JOIN vote ON "user"."id" = "vote"."userId" 
+    const res = await pool.query(`SELECT "voter".id, "voter".username, "voter".email, "voteUsers".id as candidateId, "voteUsers".username as candidateName, "voteUsers".email as candidateEmail from "user" AS "voter" LEFT JOIN vote ON "voter"."id" = "vote"."userId" 
     LEFT JOIN "user" AS "voteUsers" 
     ON "vote"."vote" @> to_jsonb(array_to_json(Array["voteUsers"."id"]))
     WHERE "vote"."pollId" = $1`,[id]);
@@ -89,7 +89,7 @@ class PollService {
   }
 
   async findPollDetailForUser(id, userId) {
-    const res = await pool.query(`SELECT "vote".id, "user".username, "voteUsers".username from "user" LEFT JOIN vote ON "user"."id" = "vote"."userId" 
+    const res = await pool.query(`SELECT "user".id, "user".username, "user".email, "voteUsers".id as candidateId , "voteUsers".username as candidateName, "voteUsers".email as candidateEmail from "user" LEFT JOIN vote ON "user"."id" = "vote"."userId" 
     LEFT JOIN "user" AS "voteUsers" 
     ON "vote"."vote" @> to_jsonb(array_to_json(Array["voteUsers"."id"]))
     WHERE "vote"."pollId" = $1 and "vote"."userId" = $2` ,[id, userId]);
@@ -102,8 +102,9 @@ class PollService {
   }
 
   async findCandidateByPollId(id) {
-    const res = await pool.query(`SELECT "user".id, "user".username FROM "user" LEFT JOIN vote ON "user"."id" = "vote"."userId"
-    WHERE "vote". "pollId" = $1`,[id]);
+    const res = await pool.query(`SELECT "user".id, "user".username 
+    FROM "user" INNER JOIN vote ON "user"."id" = "vote"."userId"
+    WHERE "vote"."pollId" = $1`,[id]);
     
     if (res.rowCount > 0) {
       return res.rows;
@@ -120,7 +121,6 @@ class PollService {
     where "poll".id = $1 and "user".status = 1`, [id]);
 
     if (res.rowCount > 0) {
-      console.log("🚀 ~ file: pollService.js:103 ~ PollService ~ countUserJoinedPoll ~ res.rows[0]:", res.rows[0])
       return res.rows[0];
     } else {
       return null;

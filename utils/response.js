@@ -11,11 +11,13 @@ const createResponseObject = (message, data, errors) => {
   if (data) {
     responseObject.data = data;
   }
-  
+
   if (errors) {
     responseObject.errors = errors;
+  } else {
+    delete responseObject.errors;
   }
-  
+
   return responseObject;
 }
 

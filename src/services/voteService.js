@@ -62,29 +62,18 @@ class VoteService {
     }
   }
 
-
-  async checkExistedVote(userId, pollId, candidateId) {
-    const res = await pool.query(
-      'SELECT * FROM public."Vote" WHERE "userId" = $1 and "pollId" = $2 and "candidateId" = $3',
-      [userId, pollId, candidateId]
-    );
-    if (res.rowCount > 0) {
-      return true;
-    } else {
-      return false;
-    } 
-  }
-
-  async findAllByPollId(pollId) {
-    const res = await pool.query(`SELECT A."userId", B.username, A."candidateId", D.username 
-    FROM PUBLIC."Vote" A, PUBLIC."User" B, PUBLIC."Candidate" C,  PUBLIC."User" D 
-    WHERE A."userId" = B.id AND A."pollId" = $1 AND A."candidateId" = C.id AND C."userId" = D.id`, [pollId]);
-    if (res.rowCount > 0) {
-      return res.rows;
-    } else {
-      return null;
-    } 
-  }
+  async findVoteDetail(id, pollId) {
+      const res = await pool.query(`SELECT "voter".id, "voter".username, "voter".email, "voteUsers".id as candidateId, "voteUsers".username as candidateName, "voteUsers".email as candidateEmail from "user" AS "voter" LEFT JOIN vote ON "voter"."id" = "vote"."userId" 
+      LEFT JOIN "user" AS "voteUsers" 
+      ON "vote"."vote" @> to_jsonb(array_to_json(Array["voteUsers"."id"]))
+      WHERE "vote"."pollId" = $1 and "vote".id = $2`,[id, pollId]);
+  
+      if (res.rowCount > 0) {
+        return res.rows;
+      } else {
+        return null;
+      }
+    }
 }
 
 module.exports = new VoteService();

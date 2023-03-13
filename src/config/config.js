@@ -1,6 +1,6 @@
 /* eslint-disable require-jsdoc */
 // Load .env
-import dotenv from 'dotenv';
+const dotenv = require('dotenv');
 dotenv.config();
 
 // Constant class to store constant value + value set using ENV

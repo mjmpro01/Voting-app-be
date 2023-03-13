@@ -19,8 +19,8 @@ app.get('/users',verifyToken(), requirePermission("User") , userController.getAl
 app.post("/polls",verifyToken(), requirePermission("Admin"), pollController.createPoll);
 app.get("/polls", verifyToken(), requirePermission("User"), pollController.getPollByUserId);
 app.get("/polls/:id", verifyToken(), requirePermission("User"), pollController.getPollDetail);
-app.post("/poll/:id/votes", verifyToken(), requirePermission("User"), voteController.createVote);
-app.get("/poll/:id/candidate", verifyToken(), requirePermission("User"), pollController.getCandidateByPollId);
+app.post("/polls/:id/votes", verifyToken(), requirePermission("User"), voteController.createVote);
+app.get("/polls/:id/candidate", verifyToken(), requirePermission("User"), pollController.getCandidateByPollId);
 
 app.listen(3000, () => {
   console.log('Server is listening on port 3000');

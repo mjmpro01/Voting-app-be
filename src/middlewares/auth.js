@@ -41,7 +41,9 @@ const verifyToken = () => {
       const token = jwt.verify(bearerToken, constant.PRIVATE_KEY);
       req.ctx = token;
       next();
-    } 
+    } else {
+      res.status(403).json({message: "You do not have permission to access this resource."});
+    }
     return null;
   }
 };

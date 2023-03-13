@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 class UserService {
   
   async findAll() {
-    const users = await pool.query('SELECT * FROM public."user" WHERE role = 2');
+    const users = await pool.query('SELECT id, username, email FROM public."user" WHERE role = 2');
     if (users.rowCount > 0) {
       return users.rows;
     } else return null;
@@ -93,7 +93,6 @@ class UserService {
 
   async findOneByEmail(email) {
     const user = await pool.query('SELECT * FROM public."user" WHERE email = $1', [email]);
-    console.log('22222')
     if (user.rows.length > 0) {
       return user.rows[0];
     } else return null;

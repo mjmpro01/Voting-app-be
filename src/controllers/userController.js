@@ -42,7 +42,6 @@ class userController {
         password,
         user.password
       );
-      console.log("🚀 ~ file: userController.js:42 ~ userController ~ login ~ isPasswordMatch:", isPasswordMatch)
 
       if (!isPasswordMatch) {
         return res
@@ -63,7 +62,7 @@ class userController {
 
   async getAllUsers(req, res) {
     try {
-      const users = await userService.default.prototype.findAllUser();
+      const users = await userService.findAll();
       res.status(201).json(createResponseObject('get all users successfully', users, null));
     } catch(e) {
       console.error(error);

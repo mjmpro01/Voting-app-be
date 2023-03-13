@@ -81,6 +81,8 @@ class pollController {
     try {
       const { id } = req.params;
       const { userId } = req.ctx;
+      const user = await userService.findOne(userId);
+      const role = user.role;
       let data = {};
       const poll = await pollService.findOne(id);
 
@@ -92,7 +94,7 @@ class pollController {
       
       const candidates = await pollService.findCandidateByPollId(id);
       const joiner = candidates.some(candidate => candidate.id === userId);
-      if (!joiner) {
+      if (!joiner && role === 2) {
         return res.status(403).json(createResponseObject("User does not have permission to join this poll", null, "permission"));
       }
 

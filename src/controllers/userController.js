@@ -53,6 +53,7 @@ class userController {
         { userId: user.id },
         Constant.PRIVATE_KEY
       );
+      console.log('POST ')
       res.status(200).json(createResponseObject('Login successfully', { token }, null));
     } catch (error) {
       console.error(error);
@@ -69,5 +70,18 @@ class userController {
       res.status(500).json({ message: "Internal Server" });
     }
   }
+
+  async getMe(req, res) {
+    try {
+      const { userId } = req.ctx;
+      const me = await userService.findOne(userId);
+      res.status(201).json(createResponseObject('get all users successfully', me, null));
+    } catch(e) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server" });
+    }
+  }
 };
+
+
 module.exports = new userController();
